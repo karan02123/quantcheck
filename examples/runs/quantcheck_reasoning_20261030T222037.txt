@@ -1,0 +1,32 @@
+========================================================================
+QuantCheck verdict -- suite: reasoning
+  source: bundled suite 'reasoning' (reasoning.jsonl)
+========================================================================
+[!] INCONCLUSIVE -- eval set too small to decide
+
+Test used : exact one-sided McNemar (binomial sign test on disagreements)
+Pooled    : N=200  b(degraded)=7  c(improved)=10  flips=17 (8.5%)
+Accuracy  : baseline 82.00%  -> candidate 83.50%
+Effect    : degradation -1.50%  (95% bootstrap CI [-5.50%, +2.50%])
+p-value   : 0.8338  (one-sided, alpha=0.05)
+
+Power check:
+  target drop to detect : 2.0%   target power : 95%
+  achieved power        : 24% (at flip rate 8.5%, N=200)
+  -> UNDERPOWERED: need ~2236 prompts to detect a 2.0% drop at this flip rate.
+  (Power depends on the FLIP RATE, not just N: few disagreements
+   means little signal, so more prompts are needed.)
+
+Response health (validity check on raw outputs):
+  baseline  : truncated 10/200  empty 0  avg 679 chars  max 2445
+  candidate : truncated 12/200  empty 0  avg 738 chars  max 2414
+  truncated inside disagreements: 1 of b=7 (candidate cut off), 1 of c=10 (baseline cut off)
+  -> no truncation or emptiness asymmetry detected.
+  (Truncation is detected by a documented heuristic, applied
+   identically to both models; see report._looks_truncated.)
+
+Plain English:
+  No significant degradation was detected, BUT the eval set was too small to reliably catch a 2.0% drop (estimated power 24%). You would need ~2236 prompts to draw a confident conclusion. Do not read this as 'passed'.
+
+Caveats: this measures one scorer on one benchmark; it is not proof of equivalence, does not capture style/tone/safety, and temp-0 GGUF inference can be slightly nondeterministic. See README.
+========================================================================

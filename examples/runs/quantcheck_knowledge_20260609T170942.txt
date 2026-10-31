@@ -1,0 +1,40 @@
+========================================================================
+QuantCheck verdict -- suite: knowledge
+  source: bundled suite 'knowledge' (knowledge.jsonl)
+========================================================================
+[!] INCONCLUSIVE -- eval set too small to decide
+
+Test used : exact one-sided McNemar (binomial sign test on disagreements)
+Pooled    : N=200  b(degraded)=5  c(improved)=13  flips=18 (9.0%)
+Accuracy  : baseline 42.50%  -> candidate 46.50%
+Effect    : degradation -4.00%  (95% bootstrap CI [-8.01%, +0.00%])
+p-value   : 0.9846  (one-sided, alpha=0.05)
+
+Power check:
+  target drop to detect : 2.0%   target power : 95%
+  achieved power        : 24% (at flip rate 9.0%, N=200)
+  -> UNDERPOWERED: need ~2375 prompts to detect a 2.0% drop at this flip rate.
+  (Power depends on the FLIP RATE, not just N: few disagreements
+   means little signal, so more prompts are needed.)
+
+Per-task breakdown (watch for damage hidden by the pooled number):
+  abstract-algebra N=15   b=0   c=1   flip=  6.7%  drop=-6.67% CI95=[-20.00%, +0.00%]  p=1
+  college-mathematics N=15   b=2   c=1   flip= 20.0%  drop=+6.67% CI95=[-13.33%, +26.83%]  p=0.5
+  computer-security N=15   b=0   c=1   flip=  6.7%  drop=-6.67% CI95=[-20.00%, +0.00%]  p=1
+  formal-logic   N=14   b=1   c=1   flip= 14.3%  drop=+0.00% CI95=[-21.43%, +21.43%]  p=0.75
+  high-school-biology N=15   b=0   c=1   flip=  6.7%  drop=-6.67% CI95=[-20.00%, +0.00%]  p=1
+  high-school-chemistry N=15   b=0   c=1   flip=  6.7%  drop=-6.67% CI95=[-20.00%, +0.00%]  p=1
+  high-school-computer-science N=13   b=0   c=0   flip=  0.0%  drop=+0.00% CI95=[+0.00%, +0.00%]  p=1
+  high-school-geography N=15   b=0   c=0   flip=  0.0%  drop=+0.00% CI95=[+0.00%, +0.00%]  p=1
+  high-school-mathematics N=15   b=1   c=2   flip= 20.0%  drop=-6.67% CI95=[-26.67%, +13.33%]  p=0.875
+  high-school-physics N=14   b=0   c=1   flip=  7.1%  drop=-7.14% CI95=[-21.43%, +0.00%]  p=1
+  high-school-statistics N=15   b=0   c=2   flip= 13.3%  drop=-13.33% CI95=[-33.33%, +0.00%]  p=1
+  high-school-world-history N=13   b=0   c=2   flip= 15.4%  drop=-15.38% CI95=[-38.46%, +0.00%]  p=1
+  logical-fallacies N=13   b=1   c=0   flip=  7.7%  drop=+7.69% CI95=[+0.00%, +23.08%]  p=0.5
+  world-religions N=13   b=0   c=0   flip=  0.0%  drop=+0.00% CI95=[+0.00%, +0.00%]  p=1
+
+Plain English:
+  No significant degradation was detected, BUT the eval set was too small to reliably catch a 2.0% drop (estimated power 24%). You would need ~2375 prompts to draw a confident conclusion. Do not read this as 'passed'.
+
+Caveats: this measures one scorer on one benchmark; it is not proof of equivalence, does not capture style/tone/safety, and temp-0 GGUF inference can be slightly nondeterministic. See README.
+========================================================================

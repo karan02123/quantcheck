@@ -1,0 +1,440 @@
+{
+  "suite_name": "knowledge",
+  "suite_source": "bundled suite 'knowledge' (knowledge.jsonl)",
+  "verdict": "DEGRADED",
+  "significant": 1.0,
+  "alpha": 0.05,
+  "plain_summary": "The candidate is statistically significantly worse than the baseline on this suite. Treat this quantization as a real quality regression.",
+  "pooled": {
+    "task": "ALL",
+    "table": {
+      "a": 147,
+      "b": 89,
+      "c": 47,
+      "d": 217,
+      "n": 500,
+      "n_flips": 136,
+      "baseline_accuracy": 0.472,
+      "candidate_accuracy": 0.388,
+      "flip_rate": 0.272
+    },
+    "test": {
+      "n": 500,
+      "b": 89,
+      "c": 47,
+      "n_flips": 136,
+      "flip_rate": 0.272,
+      "delta_degradation": 0.084,
+      "p_value": 0.0001992832433967277,
+      "test_name": "exact one-sided McNemar (binomial sign test on disagreements)",
+      "ci_low": 0.04,
+      "ci_high": 0.128
+    }
+  },
+  "per_task": [
+    {
+      "task": "abstract-algebra",
+      "table": {
+        "a": 3,
+        "b": 8,
+        "c": 2,
+        "d": 23,
+        "n": 36,
+        "n_flips": 10,
+        "baseline_accuracy": 0.3055555555555556,
+        "candidate_accuracy": 0.1388888888888889,
+        "flip_rate": 0.2777777777777778
+      },
+      "test": {
+        "n": 36,
+        "b": 8,
+        "c": 2,
+        "n_flips": 10,
+        "flip_rate": 0.2777777777777778,
+        "delta_degradation": 0.16666666666666666,
+        "p_value": 0.0546875,
+        "test_name": "exact one-sided McNemar (binomial sign test on disagreements)",
+        "ci_low": 0.0,
+        "ci_high": 0.3333333333333333
+      }
+    },
+    {
+      "task": "college-mathematics",
+      "table": {
+        "a": 3,
+        "b": 6,
+        "c": 0,
+        "d": 27,
+        "n": 36,
+        "n_flips": 6,
+        "baseline_accuracy": 0.25,
+        "candidate_accuracy": 0.08333333333333333,
+        "flip_rate": 0.16666666666666666
+      },
+      "test": {
+        "n": 36,
+        "b": 6,
+        "c": 0,
+        "n_flips": 6,
+        "flip_rate": 0.16666666666666666,
+        "delta_degradation": 0.16666666666666666,
+        "p_value": 0.015625,
+        "test_name": "exact one-sided McNemar (binomial sign test on disagreements)",
+        "ci_low": 0.05555555555555555,
+        "ci_high": 0.3055555555555556
+      }
+    },
+    {
+      "task": "computer-security",
+      "table": {
+        "a": 13,
+        "b": 8,
+        "c": 7,
+        "d": 7,
+        "n": 35,
+        "n_flips": 15,
+        "baseline_accuracy": 0.6,
+        "candidate_accuracy": 0.5714285714285714,
+        "flip_rate": 0.42857142857142855
+      },
+      "test": {
+        "n": 35,
+        "b": 8,
+        "c": 7,
+        "n_flips": 15,
+        "flip_rate": 0.42857142857142855,
+        "delta_degradation": 0.02857142857142857,
+        "p_value": 0.4999999999999999,
+        "test_name": "exact one-sided McNemar (binomial sign test on disagreements)",
+        "ci_low": -0.17142857142857143,
+        "ci_high": 0.22857142857142856
+      }
+    },
+    {
+      "task": "formal-logic",
+      "table": {
+        "a": 9,
+        "b": 1,
+        "c": 5,
+        "d": 21,
+        "n": 36,
+        "n_flips": 6,
+        "baseline_accuracy": 0.2777777777777778,
+        "candidate_accuracy": 0.3888888888888889,
+        "flip_rate": 0.16666666666666666
+      },
+      "test": {
+        "n": 36,
+        "b": 1,
+        "c": 5,
+        "n_flips": 6,
+        "flip_rate": 0.16666666666666666,
+        "delta_degradation": -0.1111111111111111,
+        "p_value": 0.984375,
+        "test_name": "exact one-sided McNemar (binomial sign test on disagreements)",
+        "ci_low": -0.25,
+        "ci_high": 0.027777777777777776
+      }
+    },
+    {
+      "task": "high-school-biology",
+      "table": {
+        "a": 11,
+        "b": 6,
+        "c": 3,
+        "d": 15,
+        "n": 35,
+        "n_flips": 9,
+        "baseline_accuracy": 0.4857142857142857,
+        "candidate_accuracy": 0.4,
+        "flip_rate": 0.2571428571428571
+      },
+      "test": {
+        "n": 35,
+        "b": 6,
+        "c": 3,
+        "n_flips": 9,
+        "flip_rate": 0.2571428571428571,
+        "delta_degradation": 0.08571428571428572,
+        "p_value": 0.25390625,
+        "test_name": "exact one-sided McNemar (binomial sign test on disagreements)",
+        "ci_low": -0.08571428571428572,
+        "ci_high": 0.2571428571428571
+      }
+    },
+    {
+      "task": "high-school-chemistry",
+      "table": {
+        "a": 14,
+        "b": 3,
+        "c": 3,
+        "d": 16,
+        "n": 36,
+        "n_flips": 6,
+        "baseline_accuracy": 0.4722222222222222,
+        "candidate_accuracy": 0.4722222222222222,
+        "flip_rate": 0.16666666666666666
+      },
+      "test": {
+        "n": 36,
+        "b": 3,
+        "c": 3,
+        "n_flips": 6,
+        "flip_rate": 0.16666666666666666,
+        "delta_degradation": 0.0,
+        "p_value": 0.65625,
+        "test_name": "exact one-sided McNemar (binomial sign test on disagreements)",
+        "ci_low": -0.1388888888888889,
+        "ci_high": 0.1388888888888889
+      }
+    },
+    {
+      "task": "high-school-computer-science",
+      "table": {
+        "a": 16,
+        "b": 8,
+        "c": 3,
+        "d": 8,
+        "n": 35,
+        "n_flips": 11,
+        "baseline_accuracy": 0.6857142857142857,
+        "candidate_accuracy": 0.5428571428571428,
+        "flip_rate": 0.3142857142857143
+      },
+      "test": {
+        "n": 35,
+        "b": 8,
+        "c": 3,
+        "n_flips": 11,
+        "flip_rate": 0.3142857142857143,
+        "delta_degradation": 0.14285714285714285,
+        "p_value": 0.11328125,
+        "test_name": "exact one-sided McNemar (binomial sign test on disagreements)",
+        "ci_low": -0.02857142857142857,
+        "ci_high": 0.3142857142857143
+      }
+    },
+    {
+      "task": "high-school-geography",
+      "table": {
+        "a": 13,
+        "b": 7,
+        "c": 4,
+        "d": 12,
+        "n": 36,
+        "n_flips": 11,
+        "baseline_accuracy": 0.5555555555555556,
+        "candidate_accuracy": 0.4722222222222222,
+        "flip_rate": 0.3055555555555556
+      },
+      "test": {
+        "n": 36,
+        "b": 7,
+        "c": 4,
+        "n_flips": 11,
+        "flip_rate": 0.3055555555555556,
+        "delta_degradation": 0.08333333333333333,
+        "p_value": 0.2744140625,
+        "test_name": "exact one-sided McNemar (binomial sign test on disagreements)",
+        "ci_low": -0.08333333333333333,
+        "ci_high": 0.25
+      }
+    },
+    {
+      "task": "high-school-mathematics",
+      "table": {
+        "a": 2,
+        "b": 11,
+        "c": 2,
+        "d": 21,
+        "n": 36,
+        "n_flips": 13,
+        "baseline_accuracy": 0.3611111111111111,
+        "candidate_accuracy": 0.1111111111111111,
+        "flip_rate": 0.3611111111111111
+      },
+      "test": {
+        "n": 36,
+        "b": 11,
+        "c": 2,
+        "n_flips": 13,
+        "flip_rate": 0.3611111111111111,
+        "delta_degradation": 0.25,
+        "p_value": 0.01123046875,
+        "test_name": "exact one-sided McNemar (binomial sign test on disagreements)",
+        "ci_low": 0.08333333333333333,
+        "ci_high": 0.4166666666666667
+      }
+    },
+    {
+      "task": "high-school-physics",
+      "table": {
+        "a": 6,
+        "b": 3,
+        "c": 6,
+        "d": 21,
+        "n": 36,
+        "n_flips": 9,
+        "baseline_accuracy": 0.25,
+        "candidate_accuracy": 0.3333333333333333,
+        "flip_rate": 0.25
+      },
+      "test": {
+        "n": 36,
+        "b": 3,
+        "c": 6,
+        "n_flips": 9,
+        "flip_rate": 0.25,
+        "delta_degradation": -0.08333333333333333,
+        "p_value": 0.91015625,
+        "test_name": "exact one-sided McNemar (binomial sign test on disagreements)",
+        "ci_low": -0.25,
+        "ci_high": 0.05555555555555555
+      }
+    },
+    {
+      "task": "high-school-statistics",
+      "table": {
+        "a": 6,
+        "b": 6,
+        "c": 3,
+        "d": 21,
+        "n": 36,
+        "n_flips": 9,
+        "baseline_accuracy": 0.3333333333333333,
+        "candidate_accuracy": 0.25,
+        "flip_rate": 0.25
+      },
+      "test": {
+        "n": 36,
+        "b": 6,
+        "c": 3,
+        "n_flips": 9,
+        "flip_rate": 0.25,
+        "delta_degradation": 0.08333333333333333,
+        "p_value": 0.25390625,
+        "test_name": "exact one-sided McNemar (binomial sign test on disagreements)",
+        "ci_low": -0.08333333333333333,
+        "ci_high": 0.25
+      }
+    },
+    {
+      "task": "high-school-world-history",
+      "table": {
+        "a": 21,
+        "b": 3,
+        "c": 3,
+        "d": 8,
+        "n": 35,
+        "n_flips": 6,
+        "baseline_accuracy": 0.6857142857142857,
+        "candidate_accuracy": 0.6857142857142857,
+        "flip_rate": 0.17142857142857143
+      },
+      "test": {
+        "n": 35,
+        "b": 3,
+        "c": 3,
+        "n_flips": 6,
+        "flip_rate": 0.17142857142857143,
+        "delta_degradation": 0.0,
+        "p_value": 0.65625,
+        "test_name": "exact one-sided McNemar (binomial sign test on disagreements)",
+        "ci_low": -0.14285714285714285,
+        "ci_high": 0.14285714285714285
+      }
+    },
+    {
+      "task": "logical-fallacies",
+      "table": {
+        "a": 11,
+        "b": 12,
+        "c": 2,
+        "d": 11,
+        "n": 36,
+        "n_flips": 14,
+        "baseline_accuracy": 0.6388888888888888,
+        "candidate_accuracy": 0.3611111111111111,
+        "flip_rate": 0.3888888888888889
+      },
+      "test": {
+        "n": 36,
+        "b": 12,
+        "c": 2,
+        "n_flips": 14,
+        "flip_rate": 0.3888888888888889,
+        "delta_degradation": 0.2777777777777778,
+        "p_value": 0.0064697265625,
+        "test_name": "exact one-sided McNemar (binomial sign test on disagreements)",
+        "ci_low": 0.08333333333333333,
+        "ci_high": 0.4722222222222222
+      }
+    },
+    {
+      "task": "world-religions",
+      "table": {
+        "a": 19,
+        "b": 7,
+        "c": 4,
+        "d": 6,
+        "n": 36,
+        "n_flips": 11,
+        "baseline_accuracy": 0.7222222222222222,
+        "candidate_accuracy": 0.6388888888888888,
+        "flip_rate": 0.3055555555555556
+      },
+      "test": {
+        "n": 36,
+        "b": 7,
+        "c": 4,
+        "n_flips": 11,
+        "flip_rate": 0.3055555555555556,
+        "delta_degradation": 0.08333333333333333,
+        "p_value": 0.2744140625,
+        "test_name": "exact one-sided McNemar (binomial sign test on disagreements)",
+        "ci_low": -0.08333333333333333,
+        "ci_high": 0.25
+      }
+    }
+  ],
+  "power": {
+    "min_detectable_drop": 0.02,
+    "flip_rate": 0.272,
+    "n": 500,
+    "achieved_power": 0.21491054785675257,
+    "required_n": 7340,
+    "target_power": 0.95,
+    "alpha": 0.05,
+    "adequate": false
+  },
+  "baseline_spec": {
+    "path_or_id": "models\\google_gemma-3-4b-it-Q8_0.gguf",
+    "backend": "gguf",
+    "n_gpu_layers": 0,
+    "extra": {}
+  },
+  "candidate_spec": {
+    "path_or_id": "models\\google_gemma-3-4b-it-Q2_K.gguf",
+    "backend": "gguf",
+    "n_gpu_layers": 0,
+    "extra": {}
+  },
+  "generation": {
+    "max_tokens": 64,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "seed": 0,
+    "stop": [],
+    "n_ctx": 2048
+  },
+  "seeds": {
+    "bootstrap_seed": 0,
+    "generation_seed": 0
+  },
+  "timings": {
+    "baseline_s": 10287.38083600998,
+    "candidate_s": 6276.904811859131
+  },
+  "created_utc": "2026-06-10T12:27:00.008373+00:00"
+}

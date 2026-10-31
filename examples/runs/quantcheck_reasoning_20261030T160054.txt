@@ -1,0 +1,24 @@
+========================================================================
+QuantCheck verdict -- suite: reasoning
+  source: bundled suite 'reasoning' (reasoning.jsonl)
+========================================================================
+[X] DEGRADED -- significant quality regression
+
+Test used : exact one-sided McNemar (binomial sign test on disagreements)
+Pooled    : N=200  b(degraded)=33  c(improved)=14  flips=47 (23.5%)
+Accuracy  : baseline 82.00%  -> candidate 72.50%
+Effect    : degradation +9.50%  (95% bootstrap CI [+3.00%, +16.00%])
+p-value   : 0.003971  (one-sided, alpha=0.05)
+
+Power check:
+  target drop to detect : 2.0%   target power : 95%
+  achieved power        : 14% (at flip rate 23.5%, N=200)
+  -> UNDERPOWERED: need ~6335 prompts to detect a 2.0% drop at this flip rate.
+  (Power depends on the FLIP RATE, not just N: few disagreements
+   means little signal, so more prompts are needed.)
+
+Plain English:
+  The candidate is statistically significantly worse than the baseline on this suite. Treat this quantization as a real quality regression.
+
+Caveats: this measures one scorer on one benchmark; it is not proof of equivalence, does not capture style/tone/safety, and temp-0 GGUF inference can be slightly nondeterministic. See README.
+========================================================================

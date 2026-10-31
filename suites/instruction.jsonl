@@ -1,0 +1,20 @@
+{"prompt": "Respond with exactly the word 'banana' and nothing else.", "answer": "banana", "task": "literal"}
+{"prompt": "Name the capital of France. Include the word 'Paris' in your answer.", "answer": "paris", "task": "keyword"}
+{"prompt": "Write a sentence about the ocean that includes both the words 'wave' and 'salt'.", "answer": "wave|salt", "task": "keyword"}
+{"prompt": "Reply with the single word 'yes'.", "answer": "yes", "task": "literal"}
+{"prompt": "List three primary colors. Your answer must include 'red', 'blue', and 'yellow'.", "answer": "red|blue|yellow", "task": "keyword"}
+{"prompt": "Translate the English word 'cat' to Spanish. Include the word 'gato'.", "answer": "gato", "task": "keyword"}
+{"prompt": "Respond with exactly the word 'done'.", "answer": "done", "task": "literal"}
+{"prompt": "Mention two planets in our solar system. Include both 'Earth' and 'Mars'.", "answer": "earth|mars", "task": "keyword"}
+{"prompt": "Write a greeting that contains the word 'hello'.", "answer": "hello", "task": "keyword"}
+{"prompt": "State whether water is wet. Include the word 'water' in your answer.", "answer": "water", "task": "keyword"}
+{"prompt": "Reply with only the word 'apple'.", "answer": "apple", "task": "literal"}
+{"prompt": "Describe a dog using the words 'loyal' and 'pet'.", "answer": "loyal|pet", "task": "keyword"}
+{"prompt": "Name a fruit and a vegetable. Include 'apple' and 'carrot'.", "answer": "apple|carrot", "task": "keyword"}
+{"prompt": "Respond with exactly the word 'ok'.", "answer": "ok", "task": "literal"}
+{"prompt": "Write about winter using the words 'snow' and 'cold'.", "answer": "snow|cold", "task": "keyword"}
+{"prompt": "Name the largest planet. Include the word 'Jupiter'.", "answer": "jupiter", "task": "keyword"}
+{"prompt": "Reply with only the word 'true'.", "answer": "true", "task": "literal"}
+{"prompt": "Mention the sun and the moon in one sentence. Include 'sun' and 'moon'.", "answer": "sun|moon", "task": "keyword"}
+{"prompt": "Describe coffee using the words 'hot' and 'bitter'.", "answer": "hot|bitter", "task": "keyword"}
+{"prompt": "Respond with exactly the word 'stop'.", "answer": "stop", "task": "literal"}

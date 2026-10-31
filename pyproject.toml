@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quantcheck"
+version = "0.1.0"
+description = "A statistically honest paired degradation test for local quantized (GGUF) models."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Karan Raghavan" }]
+keywords = ["llm", "quantization", "gguf", "llama.cpp", "evaluation", "mcnemar", "statistics"]
+
+[project.urls]
+Homepage = "https://github.com/karan02123/quantcheck"
+Repository = "https://github.com/karan02123/quantcheck"
+"Measured runs" = "https://github.com/karan02123/quantcheck/blob/main/examples/REAL_RUN.md"
+
+# Core deps are light so the stats + scoring + CLI work without a model engine.
+dependencies = [
+    "numpy>=1.23",
+    "scipy>=1.9",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+# The default GGUF backend. Install the CUDA build separately (see README).
+gguf = ["llama-cpp-python>=0.2.0"]
+# OpenAI-compatible local HTTP backend (llama.cpp server, Ollama, LM Studio...).
+http = ["requests>=2.28"]
+benchmarks = ["datasets>=2.14"]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+quantcheck = "quantcheck.cli:main"
+
+[tool.setuptools]
+packages = ["quantcheck"]
+
+[tool.setuptools.package-data]
+# Ship the bundled suites with the package install.
+quantcheck = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

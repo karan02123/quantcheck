@@ -1,0 +1,33 @@
+========================================================================
+QuantCheck verdict -- suite: reasoning
+  source: bundled suite 'reasoning' (reasoning.jsonl)
+========================================================================
+[!] INCONCLUSIVE -- eval set too small to decide
+
+Test used : exact one-sided McNemar (binomial sign test on disagreements)
+Pooled    : N=500  b(degraded)=16  c(improved)=11  flips=27 (5.4%)
+Accuracy  : baseline 89.60%  -> candidate 88.60%
+Effect    : degradation +1.00%  (95% bootstrap CI [-1.00%, +3.00%])
+p-value   : 0.221  (one-sided, alpha=0.05)
+
+Design sensitivity (what this run could have detected):
+  smallest drop detectable: 3.1% at 95% power (N=500, flip rate 5.4%)
+  your target was 2.0%  ->  sensitivity for that target: 62%
+  -> too small for your 2.0% target: that would need ~1359 prompts at this flip rate.
+  (A null result only rules out drops LARGER than the detectable
+   minimum above. Sensitivity depends on the FLIP RATE, not just N.)
+
+Response health (validity check on raw outputs):
+  baseline  : truncated 2/500  empty 0  avg 818 chars  max 1839
+  candidate : truncated 2/500  empty 0  avg 832 chars  max 2148
+  truncated inside disagreements: 0 of b=16 (candidate cut off), 0 of c=11 (baseline cut off)
+  -> no truncation or emptiness asymmetry detected.
+  (Truncation is a documented heuristic applied identically to
+   both models -- but its error rate is not equal across them,
+   since response lengths differ; see report._looks_truncated.)
+
+Plain English:
+  No significant degradation was detected, BUT the eval set was too small to reliably catch a 2.0% drop. What this run could detect is a drop of about 3.1% or larger, so anything smaller would likely have been missed. Reaching your 2.0% target needs ~1359 prompts. Do not read this as 'passed'.
+
+Caveats: this measures one scorer on one benchmark; it is not proof of equivalence, does not capture style/tone/safety, and temp-0 GGUF inference can be slightly nondeterministic. The p-value is exact and conditional (it decides the verdict); the CI is an unconditional bootstrap (it describes magnitude), so they answer different questions and may disagree at the boundary. See README.
+========================================================================

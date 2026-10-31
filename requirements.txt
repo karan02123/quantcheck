@@ -1,0 +1,17 @@
+# Core dependencies (stats, scoring, CLI). These alone are enough to run the
+# tool against an OpenAI-compatible local server or the mock backend.
+numpy>=1.23
+scipy>=1.9
+pyyaml>=6.0
+
+# --- Optional backends (install what you need) -----------------------------
+# Default GGUF backend via llama.cpp Python bindings.
+#   CPU build:   pip install llama-cpp-python
+#   CUDA build:  CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python
+# llama-cpp-python>=0.2.0
+
+# OpenAI-compatible local HTTP backend (llama.cpp server / Ollama / LM Studio).
+# requests>=2.28
+
+# --- Development -----------------------------------------------------------
+# pytest>=7.0

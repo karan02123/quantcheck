@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+
+# QuantCheck run outputs.
+#
+# `results/` is scratch space: whatever the last run happened to write, including
+# mock/smoke output and re-renders. It is ignored.
+#
+# The *curated* record lives in `examples/runs/` and IS tracked -- see
+# examples/runs/README.md. A project whose claim is honest measurement must let a
+# reader check the measurements without re-running hours of inference, so the
+# evidence ships with the code. Promote a run by copying it there.
+results/*.json
+results/*.txt
+results/*.jsonl
+results/_smoke/
+
+# Model weights -- never commit these. GGUF files run to gigabytes, and the
+# upstream licences generally do not permit redistribution.
+models/
+*.gguf
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

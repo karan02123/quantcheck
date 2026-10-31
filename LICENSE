@@ -1,0 +1,53 @@
+MIT License
+
+Copyright (c) 2026 Karan Raghavan
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+THIRD-PARTY DATA
+
+The MIT terms above cover this project's own code and documentation. The
+bundled evaluation suites in `suites/` contain samples redistributed from
+public benchmark datasets, each under its own licence. Both are MIT-licensed
+and so compatible with the terms above; their attribution notices follow.
+Provenance, selection seeds and per-file details are in `suites/SOURCE.md`.
+
+suites/reasoning.jsonl -- 500 items from the GSM8K test split.
+    Cobbe, Kosaraju, Bavarian, Chen, Jun, Kaiser, Plappert, Tworek, Hilton,
+    Nakano, Hesse & Schulman, "Training Verifiers to Solve Math Word
+    Problems", arXiv:2110.14168 (2021).
+    Distributed by OpenAI at huggingface.co/datasets/openai/gsm8k under the
+    MIT Licence.
+
+suites/knowledge.jsonl -- 500 items from the MMLU test split.
+    Hendrycks, Burns, Basart, Zou, Mazeika, Song & Steinhardt, "Measuring
+    Massive Multitask Language Understanding", arXiv:2009.03300 (2021).
+    Distributed at huggingface.co/datasets/cais/mmlu under the MIT Licence.
+    Copyright (c) 2020 Dan Hendrycks (per github.com/hendrycks/test).
+
+suites/instruction.jsonl contains prompts authored for this repository; it is
+covered by the MIT terms above.
+
+No code from any third-party repository is included in this project. In
+particular, the reference implementation accompanying Kübler et al. (2026)
+at github.com/amazon-science/LLM-Accuracy-Stats is licensed CC BY-NC 4.0,
+which would be incompatible with these terms; the statistical method here was
+implemented from the paper's description. See `quantcheck/stats.py`.

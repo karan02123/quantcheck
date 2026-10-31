@@ -1,0 +1,40 @@
+========================================================================
+QuantCheck verdict -- suite: knowledge
+  source: bundled suite 'knowledge' (knowledge.jsonl)
+========================================================================
+[X] DEGRADED -- significant quality regression
+
+Test used : exact one-sided McNemar (binomial sign test on disagreements)
+Pooled    : N=500  b(degraded)=89  c(improved)=47  flips=136 (27.2%)
+Accuracy  : baseline 47.20%  -> candidate 38.80%
+Effect    : degradation +8.40%  (95% bootstrap CI [+4.00%, +12.80%])
+p-value   : 0.0001993  (one-sided, alpha=0.05)
+
+Power check:
+  target drop to detect : 2.0%   target power : 95%
+  achieved power        : 21% (at flip rate 27.2%, N=500)
+  -> UNDERPOWERED: need ~7340 prompts to detect a 2.0% drop at this flip rate.
+  (Power depends on the FLIP RATE, not just N: few disagreements
+   means little signal, so more prompts are needed.)
+
+Per-task breakdown (watch for damage hidden by the pooled number):
+  abstract-algebra N=36   b=8   c=2   flip= 27.8%  drop=+16.67% CI95=[+0.00%, +33.33%]  p=0.05469
+  college-mathematics N=36   b=6   c=0   flip= 16.7%  drop=+16.67% CI95=[+5.56%, +30.56%]  p=0.01562
+  computer-security N=35   b=8   c=7   flip= 42.9%  drop=+2.86% CI95=[-17.14%, +22.86%]  p=0.5
+  formal-logic   N=36   b=1   c=5   flip= 16.7%  drop=-11.11% CI95=[-25.00%, +2.78%]  p=0.9844
+  high-school-biology N=35   b=6   c=3   flip= 25.7%  drop=+8.57% CI95=[-8.57%, +25.71%]  p=0.2539
+  high-school-chemistry N=36   b=3   c=3   flip= 16.7%  drop=+0.00% CI95=[-13.89%, +13.89%]  p=0.6562
+  high-school-computer-science N=35   b=8   c=3   flip= 31.4%  drop=+14.29% CI95=[-2.86%, +31.43%]  p=0.1133
+  high-school-geography N=36   b=7   c=4   flip= 30.6%  drop=+8.33% CI95=[-8.33%, +25.00%]  p=0.2744
+  high-school-mathematics N=36   b=11  c=2   flip= 36.1%  drop=+25.00% CI95=[+8.33%, +41.67%]  p=0.01123
+  high-school-physics N=36   b=3   c=6   flip= 25.0%  drop=-8.33% CI95=[-25.00%, +5.56%]  p=0.9102
+  high-school-statistics N=36   b=6   c=3   flip= 25.0%  drop=+8.33% CI95=[-8.33%, +25.00%]  p=0.2539
+  high-school-world-history N=35   b=3   c=3   flip= 17.1%  drop=+0.00% CI95=[-14.29%, +14.29%]  p=0.6562
+  logical-fallacies N=36   b=12  c=2   flip= 38.9%  drop=+27.78% CI95=[+8.33%, +47.22%]  p=0.00647
+  world-religions N=36   b=7   c=4   flip= 30.6%  drop=+8.33% CI95=[-8.33%, +25.00%]  p=0.2744
+
+Plain English:
+  The candidate is statistically significantly worse than the baseline on this suite. Treat this quantization as a real quality regression.
+
+Caveats: this measures one scorer on one benchmark; it is not proof of equivalence, does not capture style/tone/safety, and temp-0 GGUF inference can be slightly nondeterministic. See README.
+========================================================================

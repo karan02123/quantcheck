@@ -1,0 +1,22 @@
+# QuantCheck default configuration.
+# Any CLI flag overrides the matching key here. Run:
+#   quantcheck --config configs/default.yaml --baseline a.gguf --candidate b.gguf
+
+# ---- Model execution ----
+backend: gguf          # gguf | openai | mock
+n-gpu-layers: 0        # gguf only: 0 = CPU-only (safe default); -1 = offload all.
+                       # On ~6GB VRAM, raise gradually (e.g. 20) and watch for OOM.
+max-tokens: 256        # generation cap per prompt
+seed: 0                # generation + bootstrap seed (logged into results)
+
+# ---- Statistics / verdict thresholds ----
+alpha: 0.05            # one-sided significance level for the degradation test
+min-drop: 0.02         # accuracy drop you care about, for the POWER check (2%)
+target-power: 0.95     # power target; if not met, verdict is INCONCLUSIVE
+n-boot: 1000           # bootstrap resamples for the effect-size CI
+
+# ---- Eval set ----
+# limit: 100           # uncomment to cap items (quick smoke run)
+
+# ---- Output ----
+out-dir: results       # where JSON + human-readable reports are written
