@@ -32,8 +32,11 @@ that holds *only* at the null delta = 0: given the number of flips n, the count
 b is distributed Binomial(n, 0.5) with no nuisance parameters left over. At a
 non-zero margin that is no longer true, so declaring "equivalent within m
 percentage points" requires a different machinery — score-based intervals
-(Tango 1998; Nam & Blackwelder 2002) or exact unconditional methods (reviewed
-in Fagerland, Lydersen & Laake 2014, Stat Med 33(16):2850-75). Rather than ship
+(Tango 1998, Stat Med 17(8):891-908; Nam 1997, Biometrics 53(4):1422) or
+exact unconditional methods (reviewed in Fagerland, Lydersen & Laake 2014,
+Stat Med 33(16):2850-75). Those address a margin on the *difference*; a margin
+on the *ratio* is a separate literature (Nam & Blackwelder 2002, Stat Med
+21(5):689-699). Rather than ship
 one CLI whose superiority test is exact and whose equivalence test is
 asymptotic, QuantCheck implements the delta = 0 test exactly and reports the
 *minimum detectable effect* (see :func:`power_analysis`) so that a null result

@@ -169,7 +169,7 @@ On `~6 GB` VRAM, start with `--n-gpu-layers 0` (CPU) and raise it gradually
 > illustrative of the tool's *logic*, **not** a real result on a real Q4 model.
 > For **real measurements**, see [`examples/REAL_RUN.md`](examples/REAL_RUN.md)
 > (seven paired runs on real GGUF files, 28.5 h of CPU inference, including a
-> DEGRADED verdict and a cross-family replication) and
+> two DEGRADED verdicts and a cross-family replication) and
 > [`examples/runs/`](examples/runs/) for the raw result files behind them.
 
 The simulation mimics a `Q4_K_M` that is fine on knowledge/instruction but
@@ -315,8 +315,10 @@ Honesty matters more than looking good. QuantCheck **cannot**:
   The exactness of the test rests on a conditional argument that holds *only* at
   the null δ=0: given the flip count n, b ~ Binomial(n, 0.5) with no nuisance
   parameters. At a non-zero margin that breaks, so "equivalent within m points"
-  needs score-based intervals (Tango 1998; Nam & Blackwelder 2002) or exact
-  unconditional methods (Fagerland et al. 2014). Rather than ship one CLI whose
+  needs score-based intervals (Tango 1998; Nam 1997) or exact unconditional
+  methods (Fagerland et al. 2014) — and note those cover a margin on the
+  *difference*; a margin on the *ratio* is a separate literature again (Nam &
+  Blackwelder 2002). Rather than ship one CLI whose
   superiority test is exact and whose equivalence test is asymptotic, QuantCheck
   tests δ=0 exactly and reports the **minimum detectable effect**, so a null
   result is quantified instead of merely reassuring.
@@ -439,6 +441,15 @@ loaded at once**.
   doi:[10.1002/(SICI)1097-0258(19980430)17:8<891::AID-SIM780>3.0.CO;2-B](https://doi.org/10.1002/(SICI)1097-0258(19980430)17:8%3C891::AID-SIM780%3E3.0.CO;2-B)
   — the score-based method a non-inferiority verdict
   would require; see *Limitations* for why QuantCheck does not implement it.
+- **Nam, J. (1997).** *Establishing equivalence of two treatments and sample
+  size requirements in matched-pairs design.* Biometrics 53(4):1422.
+  doi:[10.2307/2533508](https://doi.org/10.2307/2533508) — equivalence at a
+  margin on the **difference** of paired proportions, with sample-size results.
+- **Nam, J. & Blackwelder, W.C. (2002).** *Analysis of the ratio of marginal
+  probabilities in a matched-pair setting.* Statistics in Medicine
+  21(5):689–699. doi:[10.1002/sim.1017](https://doi.org/10.1002/sim.1017)
+  — the corresponding method for a margin on the **ratio** rather than the
+  difference. Cited here for completeness; QuantCheck reports neither.
 - **Fagerland, M.W., Lydersen, S. & Laake, P. (2014).** *Recommended tests and
   confidence intervals for paired binomial proportions.* Statistics in Medicine
   33(16):2850–75. doi:[10.1002/sim.6148](https://doi.org/10.1002/sim.6148)
