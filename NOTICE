@@ -1,0 +1,62 @@
+QuantCheck -- third-party notices
+=================================
+
+The MIT licence in `LICENSE` covers this project's own code and documentation.
+This file records material redistributed from other sources, and the provenance
+of the statistical method.
+
+
+BUNDLED BENCHMARK DATA
+----------------------
+
+The evaluation suites in `suites/` contain samples redistributed from public
+benchmark datasets. Both are MIT-licensed and therefore compatible with this
+project's terms. Selection seeds, split names and per-file details are in
+`suites/SOURCE.md`; each suite file's header records the exact benchmark, split,
+n and seed used.
+
+suites/reasoning.jsonl -- 500 items from the GSM8K test split.
+
+    Cobbe, Kosaraju, Bavarian, Chen, Jun, Kaiser, Plappert, Tworek, Hilton,
+    Nakano, Hesse & Schulman. "Training Verifiers to Solve Math Word Problems."
+    arXiv:2110.14168 (2021).
+
+    Distributed by OpenAI at https://huggingface.co/datasets/openai/gsm8k under
+    the MIT Licence. Note that the original repository
+    github.com/openai/grade-school-math carries no LICENSE file; the dataset
+    card in OpenAI's own Hugging Face namespace is the licence of record.
+
+suites/knowledge.jsonl -- 500 items from the MMLU test split.
+
+    Hendrycks, Burns, Basart, Zou, Mazeika, Song & Steinhardt. "Measuring
+    Massive Multitask Language Understanding." arXiv:2009.03300 (2021).
+
+    Distributed at https://huggingface.co/datasets/cais/mmlu under the MIT
+    Licence. Copyright (c) 2020 Dan Hendrycks, per the LICENSE file at
+    github.com/hendrycks/test.
+
+suites/instruction.jsonl contains 20 prompts authored for this repository and is
+covered by the MIT terms in `LICENSE`.
+
+
+METHOD PROVENANCE
+-----------------
+
+No code from any third-party repository is included in this project.
+
+The paired per-sample significance test implemented in `quantcheck/stats.py` is
+an established procedure -- an exact one-sided McNemar / binomial sign test on
+the discordant cells of a 2x2 agreement table. Its application to detecting
+language-model degradations follows:
+
+    Kuebler, Budhathoki, Kleindessner, Zhou, Yin, Khetan & Karypis. "When LLMs
+    get significantly worse: A statistical approach to detect model
+    degradations." ICLR 2026. arXiv:2602.10144.
+
+That paper's reference implementation, github.com/amazon-science/LLM-Accuracy-Stats,
+is licensed CC BY-NC 4.0, which would be incompatible with the MIT terms in
+`LICENSE`. It was not used. The method here was implemented from the paper's
+description, and the module's docstring states this.
+
+Full citations, each carrying a resolvable DOI, arXiv ID or ISBN, are in the
+"Related work & citations" section of `README.md`.

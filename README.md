@@ -460,11 +460,11 @@ loaded at once**.
 
 - **Cobbe, K. et al. (2021).** *Training Verifiers to Solve Math Word Problems*
   (GSM8K), arXiv:2110.14168. — the `reasoning` suite is 500 items sampled from
-  this benchmark's test split. MIT licensed; see [`LICENSE`](LICENSE).
+  this benchmark's test split. MIT licensed; see [`NOTICE`](NOTICE).
 - **Hendrycks, D. et al. (2021).** *Measuring Massive Multitask Language
   Understanding* (MMLU), arXiv:2009.03300. — the `knowledge` suite is 500 items
   sampled from this benchmark's test split. MIT licensed; see
-  [`LICENSE`](LICENSE).
+  [`NOTICE`](NOTICE).
 - **Zhou, J. et al. (2023).** *Instruction-Following Evaluation for Large Language
   Models* (IFEval), arXiv:2311.07911. — inspiration for the `instruction` suite.
 - **llama.cpp quantization evaluation** — the community practice of comparing
@@ -483,13 +483,13 @@ memory or from a search summary.
 
 ## License
 
-MIT — see [`LICENSE`](LICENSE).
+MIT — see [`LICENSE`](LICENSE). Third-party notices are in
+[`NOTICE`](NOTICE).
 
 The bundled suites in `suites/` redistribute samples from two public
 benchmarks, **GSM8K** and **MMLU**. Both are MIT-licensed and therefore
-compatible; their attribution notices are in [`LICENSE`](LICENSE) and the
-selection details, seeds and scoring notes in
-[`suites/SOURCE.md`](suites/SOURCE.md).
+compatible; attribution is in [`NOTICE`](NOTICE) and the selection details,
+seeds and scoring notes in [`suites/SOURCE.md`](suites/SOURCE.md).
 
 No third-party code is vendored here. Notably, the reference implementation for
 Kübler et al. (2026) is CC BY-NC 4.0, which MIT could not absorb; the method in
