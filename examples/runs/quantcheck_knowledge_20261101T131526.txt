@@ -1,0 +1,56 @@
+========================================================================
+QuantCheck verdict -- suite: knowledge
+  source: bundled suite 'knowledge' (knowledge.jsonl)
+========================================================================
+[X] DEGRADED -- significant quality regression
+
+Test used : exact one-sided McNemar (binomial sign test on disagreements)
+Pooled    : N=500  b(degraded)=80  c(improved)=41  flips=121 (24.2%)
+Accuracy  : baseline 50.60%  -> candidate 42.80%
+Effect    : degradation +7.80%  (95% bootstrap CI [+3.80%, +12.00%])
+p-value   : 0.0002493  (one-sided, alpha=0.05)
+
+Design sensitivity (what this run could have detected):
+  smallest drop detectable: 7.1% at 95% power (N=500, flip rate 24.2%)
+  your target was 2.0%  ->  sensitivity for that target: 23%
+  -> too small for your 2.0% target: that would need ~6526 prompts at this flip rate.
+  (This run DID detect its effect, so the numbers above do not weaken
+   the verdict -- they describe smaller hypothetical drops. A drop can
+   also be detected while sitting below the minimum above: that bound
+   is set at 95% power, not at certainty.)
+
+Per-task breakdown (14 tasks -- exploratory, read q not p):
+  abstract-algebra             N=36   b=8   c=2   flip= 27.8%  drop=+16.67% CI95=[+0.00%, +33.33%]  p=0.05469 q=0.191  
+  college-mathematics          N=36   b=7   c=0   flip= 19.4%  drop=+19.44% CI95=[+8.33%, +33.33%]  p=0.007812 q=0.0524  
+  computer-security            N=35   b=7   c=6   flip= 37.1%  drop=+2.86% CI95=[-17.14%, +22.86%]  p=0.5 q=0.583  
+  formal-logic                 N=36   b=1   c=4   flip= 13.9%  drop=-8.33% CI95=[-19.44%, +2.78%]  p=0.9688 q=0.969  
+  high-school-biology          N=35   b=3   c=2   flip= 14.3%  drop=+2.86% CI95=[-8.57%, +14.29%]  p=0.5 q=0.583  
+  high-school-chemistry        N=36   b=4   c=2   flip= 16.7%  drop=+5.56% CI95=[-5.56%, +19.44%]  p=0.3438 q=0.583  
+  high-school-computer-science N=35   b=4   c=3   flip= 20.0%  drop=+2.86% CI95=[-11.43%, +17.14%]  p=0.5 q=0.583  
+  high-school-geography        N=36   b=6   c=5   flip= 30.6%  drop=+2.78% CI95=[-13.89%, +19.44%]  p=0.5 q=0.583  
+  high-school-mathematics      N=36   b=11  c=2   flip= 36.1%  drop=+25.00% CI95=[+8.33%, +41.67%]  p=0.01123 q=0.0524  
+  high-school-physics          N=36   b=4   c=6   flip= 27.8%  drop=-5.56% CI95=[-22.22%, +11.11%]  p=0.8281 q=0.892  
+  high-school-statistics       N=36   b=6   c=3   flip= 25.0%  drop=+8.33% CI95=[-8.33%, +25.00%]  p=0.2539 q=0.583  
+  high-school-world-history    N=35   b=3   c=2   flip= 14.3%  drop=+2.86% CI95=[-8.57%, +14.29%]  p=0.5 q=0.583  
+  logical-fallacies            N=36   b=10  c=0   flip= 27.8%  drop=+27.78% CI95=[+13.89%, +41.67%]  p=0.0009766 q=0.0137 *
+  world-religions              N=36   b=6   c=4   flip= 27.8%  drop=+5.56% CI95=[-11.11%, +22.22%]  p=0.377 q=0.583  
+  q = Benjamini-Hochberg adjusted p across these 14 tests; '*' marks q < 0.05.
+  1 of 14 tasks remain significant after correction. Raw p is NOT interpretable here: at 14 tests you expect ~0.7 to clear p<0.05 by chance.
+  14 of 14 per-task subsets are individually underpowered for a 2.0% drop; treat task lines as direction, not evidence.
+
+Response health (validity check on raw outputs):
+  baseline  : truncated 444/500  empty 0  avg 266 chars  max 404
+  candidate : truncated 450/500  empty 0  avg 265 chars  max 393
+  truncated inside disagreements: 75 of b=80 (candidate cut off), 38 of c=41 (baseline cut off)
+  [!] baseline: 444/500 responses look truncated (89%) -- raise --max-tokens
+  [!] candidate: 450/500 responses look truncated (90%) -- raise --max-tokens
+  [!] 75/80 degradation events are candidate truncations rather than demonstrated wrong answers -- treat the effect size as an upper bound.
+  (Truncation is a documented heuristic applied identically to
+   both models -- but its error rate is not equal across them,
+   since response lengths differ; see report._looks_truncated.)
+
+Plain English:
+  The candidate is statistically significantly worse than the baseline on this suite. Treat this quantization as a real quality regression.
+
+Caveats: this measures one scorer on one benchmark; it is not proof of equivalence, does not capture style/tone/safety, and temp-0 GGUF inference can be slightly nondeterministic. The p-value is exact and conditional (it decides the verdict); the CI is an unconditional bootstrap (it describes magnitude), so they answer different questions and may disagree at the boundary. See README.
+========================================================================

@@ -25,7 +25,7 @@ from dataclasses import dataclass, asdict, field
 from datetime import datetime, timezone
 from typing import Sequence
 
-from .scoring import get_scorer
+from .scoring import answer_present, get_scorer
 from .stats import (
     ContingencyTable,
     DegradationResult,
@@ -190,6 +190,8 @@ class HealthCheck:
     b_candidate_truncated: int
     c_baseline_truncated: int
     warnings: list[str]
+    b_candidate_unparseable: int = 0
+    c_baseline_unparseable: int = 0
 
     def as_dict(self) -> dict:
         return {
@@ -197,6 +199,8 @@ class HealthCheck:
             "candidate": self.candidate.as_dict(),
             "b_candidate_truncated": self.b_candidate_truncated,
             "c_baseline_truncated": self.c_baseline_truncated,
+            "b_candidate_unparseable": self.b_candidate_unparseable,
+            "c_baseline_unparseable": self.c_baseline_unparseable,
             "warnings": list(self.warnings),
         }
 
@@ -218,6 +222,7 @@ def assess_health(
     candidate_responses: Sequence[str],
     baseline_scores: Sequence[int],
     candidate_scores: Sequence[int],
+    scorers: Sequence[str] | None = None,
 ) -> HealthCheck:
     """Build the validity diagnostic from raw responses and their scores.
 
@@ -230,8 +235,24 @@ def assess_health(
 
     Thresholds (deliberately conservative, documented so they can be argued
     with): >10% truncated for either model; a truncation gap between models
-    wider than max(5, 5% of N); or >15% of degradation events being candidate
-    truncations.
+    wider than max(5, 5% of N); or >15% of degradation events where the
+    candidate produced no parseable answer.
+
+    On that last threshold: an earlier version counted degradation events where
+    the candidate response merely *looked truncated*, and warned that the
+    effect size was therefore an upper bound. That is wrong whenever the prompt
+    format puts the answer first -- the bundled knowledge prompts end with
+    "Answer:", the model replies with the letter and explains afterwards, so the
+    token budget cuts the explanation and leaves the answer intact. The warning
+    then discredits a perfectly valid verdict. Truncation is only a validity
+    threat where the scorer *also* extracted nothing, so the warning is gated
+    on that intersection. Raw truncation counts are still reported, because a
+    90% truncation rate is worth seeing even when it is harmless.
+
+    Args (continued):
+        scorers: per-item scorer names, aligned with the responses. Without
+            them, parse failure cannot be determined and the gated warning is
+            suppressed rather than guessed at.
     """
     base = _health_of(baseline_responses)
     cand = _health_of(candidate_responses)
@@ -242,6 +263,16 @@ def assess_health(
              if baseline_scores[i] == 0 and candidate_scores[i] == 1]
     b_ct = sum(1 for i in b_idx if _looks_truncated(candidate_responses[i]))
     c_bt = sum(1 for i in c_idx if _looks_truncated(baseline_responses[i]))
+
+    # Parse failure: the scorer found no answer at all. This, not truncation,
+    # is what makes a disagreement uninterpretable.
+    if scorers is not None and len(scorers) == n:
+        b_cu = sum(1 for i in b_idx
+                   if not answer_present(candidate_responses[i], scorers[i]))
+        c_bu = sum(1 for i in c_idx
+                   if not answer_present(baseline_responses[i], scorers[i]))
+    else:
+        b_cu = c_bu = 0
 
     warnings: list[str] = []
     for label, h in (("baseline", base), ("candidate", cand)):
@@ -259,13 +290,15 @@ def assess_health(
             f"token-budget artifact rather than a quality difference. Re-check "
             f"with a larger --max-tokens before trusting the effect size."
         )
-    if b_idx and b_ct / len(b_idx) > 0.15:
+    if scorers is not None and b_idx and b_cu / len(b_idx) > 0.15:
         warnings.append(
-            f"{b_ct}/{len(b_idx)} degradation events are candidate truncations "
-            f"rather than demonstrated wrong answers -- treat the effect size "
-            f"as an upper bound."
+            f"{b_cu}/{len(b_idx)} degradation events are candidate responses "
+            f"the scorer could not read an answer from, rather than "
+            f"demonstrated wrong answers -- treat the effect size as an upper "
+            f"bound, and re-check with a larger --max-tokens."
         )
-    return HealthCheck(base, cand, b_ct, c_bt, warnings)
+    return HealthCheck(base, cand, b_ct, c_bt, warnings,
+                       b_candidate_unparseable=b_cu, c_baseline_unparseable=c_bu)
 
 
 @dataclass
@@ -446,6 +479,7 @@ def evaluate(
         health = assess_health(
             baseline_responses, candidate_responses,
             baseline_scores, candidate_scores,
+            scorers=[item.scorer for item in suite.items],
         )
         for i, item in enumerate(suite.items):
             per_item.append({
@@ -719,9 +753,23 @@ def format_report(report: Report, *, color: bool = True) -> str:
             f"max {h.candidate.max_chars}"
         )
         lines.append(
-            f"  truncated inside disagreements: {h.b_candidate_truncated} of "
-            f"b={report.pooled.test.b} (candidate cut off), "
-            f"{h.c_baseline_truncated} of c={report.pooled.test.c} (baseline cut off)"
+            f"  cut off inside disagreements  : {h.b_candidate_truncated} of "
+            f"b={report.pooled.test.b} (candidate), "
+            f"{h.c_baseline_truncated} of c={report.pooled.test.c} (baseline)"
+        )
+        lines.append(
+            f"  NO ANSWER found               : "
+            f"{h.b_candidate_unparseable} of b={report.pooled.test.b} (candidate), "
+            f"{h.c_baseline_unparseable} of c={report.pooled.test.c} (baseline)"
+        )
+        lines.append(
+            "  (The second line is the one that bears on validity. A response that states"
+        )
+        lines.append(
+            "   its answer and is then cut off mid-explanation is still fully scorable,"
+        )
+        lines.append(
+            "   so a high truncation count on an answer-first prompt format is harmless.)"
         )
         if h.warnings:
             for w in h.warnings:

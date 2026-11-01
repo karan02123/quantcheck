@@ -168,8 +168,9 @@ On `~6 GB` VRAM, start with `--n-gpu-layers 0` (CPU) and raise it gradually
 > the output looks like and how to read it. The `+9.2%`, `p=0.001709`, etc. are
 > illustrative of the tool's *logic*, **not** a real result on a real Q4 model.
 > For **real measurements**, see [`examples/REAL_RUN.md`](examples/REAL_RUN.md)
-> (seven paired runs on real GGUF files, 28.5 h of CPU inference, including a
-> two DEGRADED verdicts and a cross-family replication) and
+> (eight paired runs on real GGUF files, 31.4 h of CPU inference, including
+> two distinct DEGRADED comparisons — one of them re-measured after a scorer
+> fix — and a cross-family replication) and
 > [`examples/runs/`](examples/runs/) for the raw result files behind them.
 
 The simulation mimics a `Q4_K_M` that is fine on knowledge/instruction but

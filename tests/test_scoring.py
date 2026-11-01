@@ -199,3 +199,52 @@ def test_unparseable_answer_scores_zero_not_a_guess():
     """A response with no letter is wrong, not silently assigned one."""
     assert multiple_choice_scorer("I don't know.", "A") == 0
     assert extract_choice("I don't know.") is None
+
+
+# --------------------------------------------------------------------------- #
+# Parseability vs correctness
+#
+# answer_present() asks whether the scorer could read *an* answer, not whether
+# it was right. The distinction gates the truncation diagnostic: a response
+# that answers and is then cut off mid-explanation is fully scorable, so
+# flagging it as a validity threat is a false alarm.
+# --------------------------------------------------------------------------- #
+
+from quantcheck.scoring import answer_present, extract_number  # noqa: E402
+
+
+def test_answer_present_separates_wrong_from_unreadable():
+    """Both score 0; only one of them is a measurement problem."""
+    # Answered, wrong: a real quality signal.
+    assert answer_present("B) Beijing", "multiple_choice") is True
+    assert multiple_choice_scorer("B) Beijing", "D") == 0
+    # Never answered: says little about what the model knows.
+    assert answer_present("Let me work through the options", "multiple_choice") is False
+
+
+def test_answer_first_then_truncated_is_still_parseable():
+    """The exact shape that made the old truncation warning misleading.
+
+    The bundled knowledge prompts end with "Answer:", so the model emits the
+    letter and explains afterwards. The token budget cuts the explanation long
+    after the answer is on record -- 487 of 500 baseline responses in the
+    November 2026 re-run carried their answer in the first 12 characters.
+    """
+    cut_off = " C\nExplanation:\nLet A be the predicate \"is an artifact\" and R be the p"
+    assert answer_present(cut_off, "multiple_choice") is True
+    assert multiple_choice_scorer(cut_off, "C") == 1
+
+
+def test_numeric_answer_present_tracks_the_scorer_rule():
+    assert answer_present("#### 42", "numeric") is True
+    assert answer_present("The total is 42 apples", "numeric") is True
+    assert answer_present("I am not sure how to start", "numeric") is False
+    assert extract_number("#### 42") == 42.0
+    assert extract_number("no digits here") is None
+
+
+def test_scorers_without_an_extraction_step_are_always_parseable():
+    """instruction and exact_match compare the whole response, so there is no
+    extraction that can fail and truncation cannot create this ambiguity."""
+    assert answer_present("anything at all", "instruction") is True
+    assert answer_present("", "exact_match") is True

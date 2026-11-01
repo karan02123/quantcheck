@@ -244,10 +244,14 @@ detect at 95% power given its N and flip rate.
 | 1 | Llama-3.2-3B Q8_0→Q4_K_M | knowledge | 200 | 5 | 13 | −4.00% | 0.985 | 6.07% | INCONCLUSIVE |
 | 2 | Gemma-3-4B Q8_0→Q4_K_M | knowledge | 200 | 11 | 15 | −2.00% | 0.837 | 7.60% | INCONCLUSIVE |
 | 3 | Gemma-3-4B Q8_0→Q2_K | knowledge | 200 | 32 | 20 | +6.00% | 0.063 | 11.27% | INCONCLUSIVE |
-| 4 | Gemma-3-4B Q8_0→Q2_K | knowledge | 500 | 89 | 47 | +8.40% | 0.0002 | 7.52% | **DEGRADED** |
+| 4 | Gemma-3-4B Q8_0→Q2_K | knowledge | 500 | 89 | 47 | +8.40% | 0.0002 | 7.52% | **DEGRADED** † |
 | 5 | Gemma-3-4B Q8_0→Q2_K | reasoning | 200 | 33 | 14 | +9.50% | 0.0040 | 10.66% | **DEGRADED** |
 | 6 | Gemma-3-4B Q8_0→Q4_K_M | reasoning | 200 | 7 | 10 | −1.50% | 0.834 | 5.85% | INCONCLUSIVE |
 | 7 | Qwen2.5-7B Q8_0→Q4_K_M | reasoning | 500 | 16 | 11 | +1.00% | 0.221 | 3.11% | INCONCLUSIVE |
+| 8 | Gemma-3-4B Q8_0→Q2_K | knowledge | 500 | 80 | 41 | +7.80% | 0.00025 | 7.08% | **DEGRADED** |
+
+† Run 8 is run 4 re-measured after a scorer fix; see *Run 8* below. Run 4's
+counts are kept here as the historical record, but run 8 supersedes them.
 
 Runs 1–4 used raw completion prompts; runs 5–6 used `--chat-template gemma`,
 run 7 `--chat-template qwen`. Run 7 is the only run over the full 500-item
@@ -539,6 +543,139 @@ nested rather than independent, so they cannot be treated as replications: runs
 exactly. That nesting is what licenses the paired cross-run comparison earlier
 in this section, and it is also why the MDE column matters more than the
 verdict column when comparing rows of the summary table.
+
+---
+
+## Run 8 — run 4 re-measured, and what the audit found
+
+Run 4 was the strongest claim on this page: Gemma-3-4B at Q2_K, N=500, MMLU
+knowledge, **DEGRADED** at p=0.000199. It was also the least auditable. It
+predates `per_item` persistence and the response-health block, so its stored
+result held nothing but counts — no responses to re-score, no length statistics.
+A review flagged two reasons that was uncomfortable, and both turned out to be
+worth chasing.
+
+Re-run on 2026-11-01 with identical flags (`--max-tokens 64`, raw prompts, seed
+0) and a corrected scorer. 2.87 h.
+
+### The scorer bug, and what fixing it did
+
+`multiple_choice_scorer` took the **first** match across its cue patterns. In a
+response that reasons through the options before concluding — "Option A is
+incorrect ... the answer is C" — that scores **A**. The numeric scorer had
+already been fixed for exactly this (last match within a tier, because a
+chain-of-thought answer concludes last); the multiple-choice scorer had not.
+The repository contained the lesson and the bug side by side.
+
+| | a | b | c | d | drop | p | verdict |
+|---|---|---|---|---|---|---|---|
+| Run 4, original scorer | 147 | 89 | 47 | 217 | +8.40% | 0.000199 | DEGRADED |
+| Run 8, fixed scorer | 173 | 80 | 41 | 206 | +7.80% | 0.000249 | DEGRADED |
+
+The fix recovered 26 answers, and it recovered them **symmetrically** — both
+models gained about 3.4 points of accuracy. That is the signature of a parser
+fault rather than a model difference, and it is why the verdict was never in
+real danger. The effect moved 0.6 points.
+
+**The original verdict stands.** It survived a scorer fix that changed a quarter
+of the cells in the table.
+
+### What `b = 80` is actually made of
+
+With responses now stored, the degradation events decompose:
+
+```
+candidate stated a DIFFERENT letter (a real error) : 59
+candidate produced no parseable answer at all      : 21
+```
+
+So the headline effect is not one phenomenon. Testing how much the verdict
+depends on counting non-answers as errors:
+
+| treatment of unparseable answers | b | c | p | verdict |
+|---|---|---|---|---|
+| as reported (all events) | 80 | 41 | 0.00025 | DEGRADED |
+| strict: only when both models stated a letter | 59 | 40 | 0.035 | DEGRADED |
+| harshest: candidate non-answers discarded | 59 | 41 | 0.044 | DEGRADED |
+
+**Robust in direction, fragile in strength.** The verdict holds under every
+reading, but p moves from 0.00025 to 0.044 — from decisive to barely inside
+alpha. Anyone quoting "p = 0.0002" for this comparison should know that the
+strictest defensible reading gives 0.044. Both numbers are honest; only the
+pair is complete.
+
+### A second degradation mode, with the strongest p-value on this page
+
+The 21 unparseable answers are not noise to be discarded. They are a finding.
+Counting, across all 500 prompts, how often each model failed to produce any
+readable answer:
+
+```
+baseline  (Q8_0) : 11/500
+candidate (Q2_K) : 74/500
+```
+
+Paired on the same prompts — answered, then did not:
+
+```
+b = 66    c = 3    exact one-sided McNemar    p = 9.3e-17
+```
+
+Q2_K does not merely get more answers wrong. **It stops following the output
+format.** That is a distinct failure from knowledge loss and, for anyone running
+these models in a pipeline, a more consequential one: an unparseable response
+breaks the caller regardless of what the model knew. It is also the strongest
+result anywhere in this project, by a wide margin, and it was invisible until
+responses were persisted.
+
+### A false alarm in our own validity check
+
+The re-run reported 444/500 baseline and 450/500 candidate responses as
+truncated — 89% and 90% — and warned:
+
+> 75/80 degradation events are candidate truncations rather than demonstrated
+> wrong answers -- treat the effect size as an upper bound.
+
+**That warning was wrong, and it is the most instructive error in this
+document.** These prompts end with `Answer:`. The model replies with the letter
+and explains afterwards, so a 64-token budget cuts the *explanation* long after
+the answer is on record: the answer sits in the first 12 characters of **487 of
+500** baseline responses. Truncation here is cosmetic.
+
+The diagnostic was conflating "cut off" with "unscorable". Those coincide only
+when the answer comes last. Gated correctly — on whether the scorer could read
+an answer at all — the figure is **21 of 80**, not 75.
+
+The reporting layer now separates the two, and warns only on the second:
+
+```
+cut off inside disagreements  : 75 of b=80 (candidate), 38 of c=41 (baseline)
+NO ANSWER found               : 21 of b=80 (candidate),  1 of c=41 (baseline)
+```
+
+A diagnostic that cries wolf is worse than no diagnostic, because it trains the
+reader to discount valid results — which is exactly what it did during this
+audit, for about twenty minutes, before the response bodies were read properly.
+`tests/test_report.py` pins the distinction against the shape that caused it.
+
+### What this run is really evidence for
+
+Three things, in descending order of how much they should change anyone's mind:
+
+1. **Persisting raw responses is not optional.** Every finding above — the
+   scorer fault, the decomposition of `b`, the format-compliance result, the
+   false alarm — required the response bodies. Counts are sufficient statistics
+   for the *test* and useless for auditing the *measurement*. Runs 1–4 stored
+   counts only, which is why run 4 had to be re-run rather than re-analysed.
+2. **The measurement function deserves the scrutiny the statistics got.** The
+   exact test is now cross-validated against the paper's own implementation to
+   a maximum difference of 0.0 (see `tests/test_reference_agreement.py`). The
+   scorer in front of it had a bug affecting four published runs. Precision
+   downstream of a faulty parser is decoration.
+3. **Verdicts should be read with their sensitivity analysis.** `p = 0.00025`
+   and `p = 0.044` describe the same data under different, defensible
+   conventions. Reporting only the smaller one would be technically true and
+   substantively misleading.
 
 ---
 

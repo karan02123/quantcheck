@@ -22,8 +22,10 @@ __all__ = [
     "multiple_choice_scorer",
     "extract_choice",
     "numeric_answer_scorer",
+    "extract_number",
     "instruction_keyword_scorer",
     "exact_match_scorer",
+    "answer_present",
     "get_scorer",
     "SCORERS",
 ]
@@ -206,20 +208,34 @@ def numeric_answer_scorer(response: str, gold: str) -> int:
     if gold_num is None:
         raise ValueError(f"numeric scorer received non-numeric gold answer: {gold!r}")
 
+    val = extract_number(response)
+    if val is None:
+        return 0
+    return int(abs(val - gold_num) < 1e-6)
+
+
+def extract_number(response: str) -> float | None:
+    """Extract the answer number from a response, or None if there is none.
+
+    Holds the tiered rule documented on :func:`numeric_answer_scorer`, split
+    out so that *whether an answer exists* can be asked without also asking
+    whether it is correct. :func:`answer_present` needs exactly that: a
+    response cut off before stating any number is unscorable, while one that
+    states its answer and is then truncated mid-explanation is fine.
+    """
     for cue in _CUE_TIERS:
         matches = cue.findall(response)
         if matches:
             # Last match in the strongest tier that fired.
             val = _to_number(matches[-1])
             if val is not None:
-                return int(abs(val - gold_num) < 1e-6)
+                return val
 
-    numbers = _NUMBER_RE.findall(response)
-    for tok in reversed(numbers):
+    for tok in reversed(_NUMBER_RE.findall(response)):
         val = _to_number(tok)
         if val is not None:
-            return int(abs(val - gold_num) < 1e-6)
-    return 0
+            return val
+    return None
 
 
 # --------------------------------------------------------------------------- #
@@ -282,6 +298,39 @@ SCORERS: dict[str, Scorer] = {
     "instruction": instruction_keyword_scorer,
     "exact_match": exact_match_scorer,
 }
+
+
+def answer_present(response: str, scorer: str) -> bool:
+    """Did this response contain anything the scorer could read as an answer?
+
+    This is deliberately *not* "was the answer correct". It separates two very
+    different failures that both score 0:
+
+      * the model answered and was wrong -- a real quality signal;
+      * the model never produced a parseable answer -- which may just mean it
+        ran out of tokens, and says little about what it knows.
+
+    The distinction is what makes the truncation diagnostic meaningful. A
+    response that states its answer and is then cut off mid-explanation is
+    fully scorable, so flagging it as a validity threat is a false alarm. See
+    :func:`quantcheck.report.assess_health`.
+
+    Scorers whose answer is the whole response (``instruction``,
+    ``exact_match``) are treated as always parseable: there is no extraction
+    step that can fail, so truncation cannot create this particular ambiguity.
+
+    Args:
+        response: raw model output.
+        scorer: the scorer name from the suite item.
+
+    Returns:
+        True if an answer could be extracted (or if extraction does not apply).
+    """
+    if scorer == "multiple_choice":
+        return extract_choice(response) is not None
+    if scorer == "numeric":
+        return extract_number(response) is not None
+    return True
 
 
 def get_scorer(name: str) -> Scorer:
