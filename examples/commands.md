@@ -131,10 +131,10 @@ python examples/worked_example.py
 quantcheck fetch-suites --n-reasoning 500 --n-knowledge 500 --seed 42
 ```
 
-Requires `pip install datasets`. Overwrites `suites/reasoning.jsonl` and
-`suites/knowledge.jsonl`, recording benchmark, split, n and seed in each file's
-header. The committed suites were produced by exactly this command — see
-[`../suites/SOURCE.md`](../suites/SOURCE.md).
+Requires `pip install datasets`. Overwrites `quantcheck/suites/reasoning.jsonl`
+and `quantcheck/suites/knowledge.jsonl`, recording benchmark, split, n and seed
+in each file's header. The committed suites were produced by exactly this command — see
+[`../quantcheck/suites/SOURCE.md`](../quantcheck/suites/SOURCE.md).
 
 ## Exit codes (handy for CI gating)
 

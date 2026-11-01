@@ -4,7 +4,9 @@ A *suite* is an ordered list of :class:`SuiteItem`. Each item carries a prompt,
 a gold answer, the name of the scorer to use, and a ``task`` tag for per-task
 breakdown (see the "aggregate hides the damage" insight in the README).
 
-Bundled suites are stored as JSONL under the package's ``suites/`` directory so
+Bundled suites are stored as JSONL inside the package, at
+``quantcheck/suites/``, so they ship with a `pip install` rather than only
+working from a source checkout. They are
 the tool runs out of the box on a laptop. Each bundled suite ships with a
 ``SOURCE.md`` documenting provenance and licensing. They are intentionally small
 (a few hundred items at most) so a full paired run finishes in reasonable time
@@ -39,8 +41,11 @@ __all__ = [
     "list_bundled_suites",
 ]
 
-# Bundled suites live next to the installed package: <repo>/suites/<name>.jsonl
-_SUITES_DIR = Path(__file__).resolve().parent.parent / "suites"
+# Bundled suites live *inside* the package, at quantcheck/suites/<name>.jsonl,
+# and are declared as package-data in pyproject.toml. Keep both in step: a
+# path outside the package resolves to site-packages/ on a non-editable
+# install, where nothing is shipped, and every bundled suite fails to load.
+_SUITES_DIR = Path(__file__).resolve().parent / "suites"
 
 # Default scorer per bundled suite name.
 BUNDLED_SUITES: dict[str, str] = {

@@ -63,9 +63,16 @@ much, and am I even sure?* — on a laptop, in one command.
 Requires **Python 3.10+**.
 
 ```bash
+pip install git+https://github.com/karan02123/quantcheck.git
+```
+
+The bundled benchmark suites ship inside the package, so that install is
+self-contained. To work on the code instead:
+
+```bash
 git clone https://github.com/karan02123/quantcheck.git && cd quantcheck
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -e .
+pip install -e ".[dev]"
 ```
 
 The core install (numpy, scipy, pyyaml) is light and is all you need for the
@@ -361,8 +368,8 @@ quantcheck --baseline base.gguf --candidate cand.gguf --suite my_prompts.jsonl
 
 The bundled `reasoning` and `knowledge` suites hold **500 real items each**,
 sampled from the GSM8K and MMLU test splits with a recorded seed (see
-[`suites/SOURCE.md`](suites/SOURCE.md)); `instruction` is 20 hand-authored items
-and is a demo, not a measurement. Every result in
+[`quantcheck/suites/SOURCE.md`](quantcheck/suites/SOURCE.md)); `instruction` is
+20 hand-authored items and is a demo, not a measurement. Every result in
 [`examples/REAL_RUN.md`](examples/REAL_RUN.md) was measured on these files.
 
 Even so, prefer a **custom suite** for anything that matters. GSM8K and MMLU are
@@ -517,10 +524,11 @@ memory or from a search summary.
 MIT — see [`LICENSE`](LICENSE). Third-party notices are in
 [`NOTICE`](NOTICE).
 
-The bundled suites in `suites/` redistribute samples from two public
+The bundled suites in `quantcheck/suites/` redistribute samples from two public
 benchmarks, **GSM8K** and **MMLU**. Both are MIT-licensed and therefore
 compatible; attribution is in [`NOTICE`](NOTICE) and the selection details,
-seeds and scoring notes in [`suites/SOURCE.md`](suites/SOURCE.md).
+seeds and scoring notes in
+[`quantcheck/suites/SOURCE.md`](quantcheck/suites/SOURCE.md).
 
 No third-party code is vendored here. Notably, the reference implementation for
 Kübler et al. (2026) is CC BY-NC 4.0, which MIT could not absorb; the method in

@@ -12,17 +12,21 @@ license = { text = "MIT" }
 authors = [{ name = "Karan Raghavan" }]
 keywords = ["llm", "quantization", "gguf", "llama.cpp", "evaluation", "mcnemar", "statistics"]
 
-[project.urls]
-Homepage = "https://github.com/karan02123/quantcheck"
-Repository = "https://github.com/karan02123/quantcheck"
-"Measured runs" = "https://github.com/karan02123/quantcheck/blob/main/examples/REAL_RUN.md"
-
 # Core deps are light so the stats + scoring + CLI work without a model engine.
+# Keep every bare `key = value` for [project] ABOVE the first sub-table header:
+# in TOML everything after [project.urls] belongs to that table until the next
+# header, so a `dependencies` array placed below it parses as
+# project.urls.dependencies and the build fails outright.
 dependencies = [
     "numpy>=1.23",
     "scipy>=1.9",
     "pyyaml>=6.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/karan02123/quantcheck"
+Repository = "https://github.com/karan02123/quantcheck"
+"Measured runs" = "https://github.com/karan02123/quantcheck/blob/main/examples/REAL_RUN.md"
 
 [project.optional-dependencies]
 # The default GGUF backend. Install the CUDA build separately (see README).
@@ -39,8 +43,10 @@ quantcheck = "quantcheck.cli:main"
 packages = ["quantcheck"]
 
 [tool.setuptools.package-data]
-# Ship the bundled suites with the package install.
-quantcheck = []
+# Ship the bundled suites with the package install. Without this a
+# non-editable install (pip install git+...) has no suites at all and every
+# `--suite <name>` fails; see the comment on _SUITES_DIR in suites.py.
+quantcheck = ["suites/*.jsonl", "suites/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

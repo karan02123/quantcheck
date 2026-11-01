@@ -50,7 +50,7 @@ def _load_config(path: str | None) -> dict:
 
 
 def _cmd_fetch_suites(argv: list[str]) -> int:
-    """Subcommand: fetch real GSM8K + MMLU benchmark subsets into suites/."""
+    """Subcommand: fetch real GSM8K + MMLU subsets into quantcheck/suites/."""
     pa = argparse.ArgumentParser(
         prog="quantcheck fetch-suites",
         description=(
@@ -66,7 +66,8 @@ def _cmd_fetch_suites(argv: list[str]) -> int:
     pa.add_argument("--seed", type=int, default=42,
                     help="sampling seed (logged in the JSONL header, default 42)")
     pa.add_argument("--out-dir", default=None,
-                    help="output directory (default: suites/ in the repo)")
+                    help="output directory (default: quantcheck/suites/ inside the "
+                         "package; pass this if that is not writable)")
     args = pa.parse_args(argv)
 
     from .datasets import fetch_and_write_all
@@ -87,7 +88,8 @@ def _cmd_fetch_suites(argv: list[str]) -> int:
     for name, path in written.items():
         print(f"  {name}: {path}")
     print(
-        "\nNote: instruction suite unchanged (see suites/SOURCE.md for why).\n"
+        "\nNote: instruction suite unchanged "
+        "(see quantcheck/suites/SOURCE.md for why).\n"
         "Re-run 'quantcheck fetch-suites' to refresh with a different seed or n."
     )
     return 0

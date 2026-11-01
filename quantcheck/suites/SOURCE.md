@@ -3,7 +3,7 @@
 `reasoning.jsonl` and `knowledge.jsonl` as committed hold **real samples from
 the public benchmarks** — 500 items each from the GSM8K and MMLU test splits,
 produced by `quantcheck fetch-suites`. Every result in
-[`../examples/REAL_RUN.md`](../examples/REAL_RUN.md) was measured on these exact
+[`../../examples/REAL_RUN.md`](../../examples/REAL_RUN.md) was measured on these exact
 files. The first lines of each file state the benchmark, split, n and seed, so
 the selection is reproducible:
 
@@ -18,7 +18,7 @@ a different sample. `instruction.jsonl` is hand-authored and is *not* touched by
 `fetch-suites` (see below for why).
 
 Both benchmarks are redistributed here under the **MIT Licence**; attribution
-notices are in [`../NOTICE`](../NOTICE). An earlier version of this file
+notices are in [`../../NOTICE`](../../NOTICE). An earlier version of this file
 described the shipped suites as hand-authored prompts in the *style* of these
 benchmarks. That was true of the original commit and is no longer true of the
 files beside it — the header line above is the authority.

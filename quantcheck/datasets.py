@@ -2,15 +2,15 @@
 
 WHY THIS EXISTS
 --------------
-The bundled JSONL files in suites/ are hand-authored prompts in the *style* of
-GSM8K/MMLU — honest about that provenance (see suites/SOURCE.md), but not
-the real thing. "Style I wrote" != "samples from the actual benchmark," and only
+The bundled JSONL files in quantcheck/suites/ started as hand-authored prompts
+in the *style* of GSM8K/MMLU — honest about that provenance (see
+quantcheck/suites/SOURCE.md) — but not the real thing. "Style I wrote" != "samples from the actual benchmark," and only
 the latter lets a user trust the verdict maps to numbers others have measured.
 
 This module fetches a fixed, seeded, reproducible subset of each real benchmark
 via HuggingFace ``datasets``, converts to QuantCheck JSONL format, and writes
-into suites/ — overwriting the hand-authored files. After running this once the
-existing loader, scorer, and runner are unchanged; only the provenance improves.
+into quantcheck/suites/ — overwriting the hand-authored files. After running
+this once the existing loader, scorer, and runner are unchanged; only the provenance improves.
 
 BENCHMARKS
 ----------
@@ -49,7 +49,7 @@ __all__ = [
     "fetch_and_write_all",
 ]
 
-_SUITES_DIR = Path(__file__).resolve().parent.parent / "suites"
+_SUITES_DIR = Path(__file__).resolve().parent / "suites"
 
 # MMLU subjects to sample from — broad topic coverage without
 # overcounting any one domain.
@@ -257,15 +257,18 @@ def fetch_and_write_all(
 ) -> dict[str, Path]:
     """Fetch real benchmark subsets and write them as bundled suite JSONL files.
 
-    This overwrites suites/reasoning.jsonl and suites/knowledge.jsonl with real
-    public benchmark samples. suites/instruction.jsonl is left unchanged (see
+    This overwrites quantcheck/suites/reasoning.jsonl and
+    quantcheck/suites/knowledge.jsonl with real public benchmark samples.
+    quantcheck/suites/instruction.jsonl is left unchanged (see
     module docstring for why).
 
     Args:
         n_reasoning: items to fetch from GSM8K (default 200).
         n_knowledge: items to fetch from MMLU (default 200).
         seed: sampling seed (logged in the JSONL header for reproducibility).
-        out_dir: where to write; defaults to the package's suites/ directory.
+        out_dir: where to write; defaults to quantcheck/suites/ inside the
+            package. On a non-editable install that directory may not be
+            writable, so pass --out-dir and point --suite at the result.
         verbose: print progress.
 
     Returns:
@@ -299,7 +302,7 @@ def fetch_and_write_all(
     if verbose:
         print(
             "Skipping instruction suite (hand-authored; IFEval verifiers not "
-            "reducible to keyword scoring — see suites/SOURCE.md)."
+            "reducible to keyword scoring — see quantcheck/suites/SOURCE.md)."
         )
 
     return written
