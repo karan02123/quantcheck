@@ -241,9 +241,9 @@ detect at 95% power given its N and flip rate.
 
 | Run | Pair | Suite | N | b | c | Drop | p | MDE | Verdict |
 |-----|------|-------|---|---|---|------|---|-----|---------|
-| 1 | Llama-3.2-3B Q8_0→Q4_K_M | knowledge | 200 | 5 | 13 | −4.00% | 0.985 | 6.07% | INCONCLUSIVE |
-| 2 | Gemma-3-4B Q8_0→Q4_K_M | knowledge | 200 | 11 | 15 | −2.00% | 0.837 | 7.60% | INCONCLUSIVE |
-| 3 | Gemma-3-4B Q8_0→Q2_K | knowledge | 200 | 32 | 20 | +6.00% | 0.063 | 11.27% | INCONCLUSIVE |
+| 1 | Llama-3.2-3B Q8_0→Q4_K_M | knowledge | 200 | 5 | 13 | −4.00% | 0.985 | 6.07% | INCONCLUSIVE ‡ |
+| 2 | Gemma-3-4B Q8_0→Q4_K_M | knowledge | 200 | 11 | 15 | −2.00% | 0.837 | 7.60% | INCONCLUSIVE ‡ |
+| 3 | Gemma-3-4B Q8_0→Q2_K | knowledge | 200 | 32 | 20 | +6.00% | 0.063 | 11.27% | INCONCLUSIVE ‡ |
 | 4 | Gemma-3-4B Q8_0→Q2_K | knowledge | 500 | 89 | 47 | +8.40% | 0.0002 | 7.52% | **DEGRADED** † |
 | 5 | Gemma-3-4B Q8_0→Q2_K | reasoning | 200 | 33 | 14 | +9.50% | 0.0040 | 10.66% | **DEGRADED** |
 | 6 | Gemma-3-4B Q8_0→Q4_K_M | reasoning | 200 | 7 | 10 | −1.50% | 0.834 | 5.85% | INCONCLUSIVE |
@@ -252,6 +252,27 @@ detect at 95% power given its N and flip rate.
 
 † Run 8 is run 4 re-measured after a scorer fix; see *Run 8* below. Run 4's
 counts are kept here as the historical record, but run 8 supersedes them.
+
+‡ **Scored with the same pre-fix `multiple_choice_scorer` as run 4, and not
+re-measured.** All four knowledge runs predate the fix described under *Run 8*;
+only run 4 was re-run, because it was the only one carrying a DEGRADED verdict.
+Runs 1–3 are kept as the historical record and should be read as indicative.
+
+How much could the fix move them? Run 8 is the only evidence: there the fix
+raised both models' accuracy by a similar amount and shifted the effect by
+0.6 points. Runs 1–3 have MDEs of 6.07%, 7.60% and 11.27% against effects of
+−4.00%, −2.00% and +6.00%, so a shift of that magnitude leaves all three
+INCONCLUSIVE. That is an extrapolation from one re-measured run, not a
+measurement of these three — the honest statement is that their verdicts are
+unlikely to change and their counts are known to be slightly wrong. Run 8 is
+the only re-measured knowledge result on this page.
+
+Two statements below do lean on these rows, and both survive the caveat. The
+"Q4_K_M looks safe at 3–4B scale" paragraph uses runs 1–2 only to report what
+their MDEs *fail* to rule out, which is a caution rather than a positive claim.
+The runs 3-vs-4 comparison is a like-for-like one — both were scored with the
+same pre-fix scorer, so the N=200 → N=500 effect it demonstrates is not an
+artefact of the bug.
 
 Runs 1–4 used raw completion prompts; runs 5–6 used `--chat-template gemma`,
 run 7 `--chat-template qwen`. Run 7 is the only run over the full 500-item
@@ -572,10 +593,16 @@ The repository contained the lesson and the bug side by side.
 | Run 4, original scorer | 147 | 89 | 47 | 217 | +8.40% | 0.000199 | DEGRADED |
 | Run 8, fixed scorer | 173 | 80 | 41 | 206 | +7.80% | 0.000249 | DEGRADED |
 
-The fix recovered 26 answers, and it recovered them **symmetrically** — both
-models gained about 3.4 points of accuracy. That is the signature of a parser
-fault rather than a model difference, and it is why the verdict was never in
-real danger. The effect moved 0.6 points.
+The fix recovered answers for both models at **nearly the same rate**: baseline
+accuracy rose 47.2% → 50.6% (+3.4 points, 17 answers), candidate 38.8% → 42.8%
+(+4.0 points, 20 answers). The both-correct cell grew by 26. That near-symmetry
+is the signature of a parser fault rather than a model difference.
+
+The 0.6-point gap between those two gains *is* the movement in the effect:
++8.40% → +7.80%. The pre-fix scorer was mis-parsing slightly more of the
+candidate's responses than the baseline's, so correcting it **shrank** the
+measured degradation rather than inflating it. Why the imbalance fell that way
+was not investigated. The verdict was never in real danger.
 
 **The original verdict stands.** It survived a scorer fix that changed a quarter
 of the cells in the table.

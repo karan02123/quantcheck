@@ -35,9 +35,12 @@ Skipped by default, since it needs an external checkout. To run:
     git clone https://github.com/amazon-science/LLM-Accuracy-Stats.git /tmp/ref
     QUANTCHECK_REFERENCE_REPO=/tmp/ref pytest tests/test_reference_agreement.py -v
 
-Recorded outcome (514 tables, incl. all seven published runs): the two
-implementations agree **exactly** -- maximum absolute difference 0.0, not merely
-within floating-point tolerance. The single divergence found is documented in
+Recorded outcome (514 tables, incl. the seven runs published at the time): the
+two implementations agree **exactly** -- maximum absolute difference 0.0, not
+merely within floating-point tolerance. Run 8 was pinned after that figure was
+recorded, so the next run of this file covers eight published runs and 515
+tables; do not quote 515 as agreeing until it has been observed. The single
+divergence found is documented in
 `test_reference_crashes_on_zero_flips_quantcheck_does_not` below.
 """
 
@@ -98,6 +101,9 @@ def test_reference_uses_the_same_tail(reference):
         ("run 5  Gemma-3-4B   Q2_K   reasoning", 33, 14, 200),
         ("run 6  Gemma-3-4B   Q4_K_M reasoning", 7, 10, 200),
         ("run 7  Qwen2.5-7B   Q4_K_M reasoning", 16, 11, 500),
+        # Run 8 supersedes run 4 and carries the project's strongest claim, so
+        # it has to be pinned here too. Run 4 stays as the historical record.
+        ("run 8  Gemma-3-4B   Q2_K   knowledge", 80, 41, 500),
     ],
 )
 def test_published_runs_match_the_reference(reference, label, b, c, n):
