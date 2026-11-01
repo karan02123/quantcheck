@@ -20,6 +20,7 @@ from typing import Callable, Protocol
 __all__ = [
     "Scorer",
     "multiple_choice_scorer",
+    "extract_choice",
     "numeric_answer_scorer",
     "instruction_keyword_scorer",
     "exact_match_scorer",
@@ -37,24 +38,78 @@ class Scorer(Protocol):
 # --------------------------------------------------------------------------- #
 # Multiple choice (MMLU-style: answer is a single letter A/B/C/D)
 # --------------------------------------------------------------------------- #
-_MC_PATTERNS = [
-    re.compile(r"\banswer\s*(?:is|:)?\s*\(?([A-D])\)?", re.IGNORECASE),
-    re.compile(r"\b(?:option|choice)\s*\(?([A-D])\)?", re.IGNORECASE),
-    re.compile(r"^\s*\(?([A-D])\)?[\.\):]", re.IGNORECASE | re.MULTILINE),
-    re.compile(r"\b([A-D])\b"),  # last-resort: first standalone A-D token
-]
+# A bare option letter at the very start of the response. The bundled knowledge
+# prompts end with "Answer:", so a model answering directly -- the raw-completion
+# regime -- emits the letter immediately and nothing else matters. Anchored, so
+# there is no ambiguity about which letter it is.
+_MC_ANCHORED = re.compile(r"^\s*\**\(?([A-D])\)?\**\s*(?:[.):,\]]|$|\s)")
+
+# Answer cues, strongest first. Within a tier the LAST match wins: in a
+# chain-of-thought answer the conclusion comes last and the options being
+# weighed up come earlier. This mirrors _CUE_TIERS in numeric_answer_scorer;
+# the two scorers deliberately share the convention.
+_MC_TIERS = (
+    # Tier 1: an explicit answer statement. "the answer is C", "Answer: C".
+    re.compile(r"(?:final\s+)?answer\s*(?:is|:|=)?\s*\**\(?([A-D])\)?\**",
+               re.IGNORECASE),
+    # Tier 2: the letter asserted as correct. "C is the correct option."
+    re.compile(r"\**\(?([A-D])\)?\**\s+is\s+(?:the\s+)?"
+               r"(?:correct|right|best|answer)", re.IGNORECASE),
+    # Tier 3: "option C" / "choice C". Weak on its own -- a response that
+    # dismisses options one by one is full of these -- but the last one is
+    # usually the conclusion.
+    re.compile(r"\b(?:option|choice)\s*\**\(?([A-D])\)?\**", re.IGNORECASE),
+    # Tier 4: a line that begins with the letter, e.g. "C) Tokyo".
+    re.compile(r"^\s*\**\(?([A-D])\)?\**[.):]", re.MULTILINE),
+    # Tier 5: last resort -- the last standalone A-D token in the text.
+    re.compile(r"\b([A-D])\b"),
+)
+
+
+def extract_choice(response: str) -> str | None:
+    """Extract the answer letter from a multiple-choice response, or None.
+
+    Exposed separately from the scorer so the parsing rule can be tested and
+    audited on its own, independently of whether it matches a gold answer.
+    """
+    # An explicit answer statement always outranks position. A response may
+    # open by quoting an option it goes on to reject -- "A) Seoul is not the
+    # capital. The correct answer is D." -- so the anchor must yield to tiers
+    # 1 and 2 rather than short-circuit them.
+    for tier in _MC_TIERS[:2]:
+        matches = tier.findall(response)
+        if matches:
+            return matches[-1].upper()
+
+    anchored = _MC_ANCHORED.match(response)
+    if anchored:
+        return anchored.group(1).upper()
+
+    for tier in _MC_TIERS[2:]:
+        matches = tier.findall(response)
+        if matches:
+            return matches[-1].upper()
+    return None
 
 
 def multiple_choice_scorer(response: str, gold: str) -> int:
     """Score a multiple-choice answer by extracting a single letter A-D.
 
-    Parsing rule (tried in order, first match wins):
-        1. "answer is X" / "answer: X"
-        2. "option X" / "choice X"
-        3. a line beginning with "X." / "X)" / "X:"
-        4. the first standalone A-D token anywhere in the text
+    Parsing rule:
+        0. A bare letter at the very start of the response wins outright. The
+           prompts end with "Answer:", so this is a model answering directly.
+        Otherwise, tiers are tried strongest-first and the **last** match within
+        the winning tier is taken:
+        1. "answer is X" / "answer: X" / "final answer X"
+        2. "X is the correct answer" / "X is right"
+        3. "option X" / "choice X"
+        4. a line beginning with "X." / "X)" / "X:"
+        5. the last standalone A-D token anywhere in the text
 
-    The same rule is applied to both models, so any parser bias is symmetric.
+    Why last-match: in a chain-of-thought answer the conclusion comes last,
+    while the options under consideration come earlier. An earlier version took
+    the *first* match and therefore scored "Option A is incorrect, ... the
+    answer is C" as A. See tests/test_scoring.py for the regression tests.
 
     Args:
         response: raw model output.
@@ -64,18 +119,21 @@ def multiple_choice_scorer(response: str, gold: str) -> int:
         1 if the extracted letter equals gold, else 0.
 
     Known failure modes:
-        - If the model restates the question (which contains the option letters)
-          before answering, rule 4 may grab the wrong letter. Rules 1–3 guard
-          against this for well-formatted answers.
-        - A model that never emits a letter scores 0 (treated as incorrect),
-          which is the honest outcome for an unparseable answer.
+        - A response that names the right letter and then keeps talking about
+          another option can still be mis-parsed by tier 3 or 5.
+        - A model that never emits a letter scores 0, which is the honest
+          outcome for an unparseable answer.
+        - The same rule is applied to both models, but that makes the parser
+          bias *symmetrically applied*, not symmetric in effect. If one model
+          is markedly more verbose than the other -- and quantization does
+          change response length, measurably so in examples/REAL_RUN.md -- then
+          it offers more text for a weak tier to trip over, and the error rates
+          are not equal. Treat a verdict built on heavy chain-of-thought
+          multiple-choice output with corresponding caution.
     """
     gold_letter = gold.strip().upper()[:1]
-    for pat in _MC_PATTERNS:
-        m = pat.search(response)
-        if m:
-            return int(m.group(1).upper() == gold_letter)
-    return 0
+    found = extract_choice(response)
+    return int(found is not None and found == gold_letter)
 
 
 # --------------------------------------------------------------------------- #

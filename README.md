@@ -406,6 +406,7 @@ report.
 ```bash
 pip install -e ".[dev]"
 pytest                     # 81 tests; the stats tests are the ones that matter
+                           # (+10 cross-validation tests, skipped by default)
 ```
 
 `tests/test_stats.py` is the file to scrutinize: if the statistics are subtly
@@ -414,6 +415,24 @@ known *independently* of the implementation (closed-form binomial p-values,
 simulated CI coverage, and the power calc against Monte-Carlo of the exact test).
 `tests/test_runner.py` asserts the hard invariant that **two models are never
 loaded at once**.
+
+**Cross-validated against the reference implementation.** Those checks are all
+self-derived, so a shared misreading of the method would pass every one of them.
+`tests/test_reference_agreement.py` closes that gap by comparing against the
+code released with Kübler et al. (2026) as a **black box**: across 514
+contingency tables — 500 randomized, plus boundary shapes, plus all seven
+published runs — the two implementations agree with a maximum absolute
+difference of **0.0**, exactly rather than within tolerance.
+
+One behavioural difference was found. When two models agree on every prompt
+(`b = c = 0`) there are no discordant pairs and the correct answer is `p = 1.0`;
+QuantCheck returns that, while the reference raises `ZeroDivisionError`. That
+case is what a *lossless* optimization produces, so it is reachable in practice.
+
+The test is skipped unless `QUANTCHECK_REFERENCE_REPO` points at a checkout. No
+reference code is vendored here, and none was read for implementation detail —
+that repository is CC BY-NC 4.0, and QuantCheck's statistics were implemented
+from the paper. See [`NOTICE`](NOTICE).
 
 ---
 

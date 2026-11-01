@@ -135,3 +135,67 @@ def test_scorers_always_return_int_0_or_1():
         gold = "1" if name == "numeric" else "A" if name == "multiple_choice" else "x"
         v = s("garbage response with no signal", gold)
         assert v in (0, 1) and isinstance(v, int)
+
+
+# --------------------------------------------------------------------------- #
+# multiple_choice_scorer: chain-of-thought regressions
+#
+# The scorer originally took the FIRST match across its patterns, so a verbose
+# answer that reasoned through the options scored whichever one it discussed
+# first: "Option A is incorrect ... the answer is C" scored A. It now uses
+# tiered cues and takes the LAST match within the winning tier, matching the
+# convention numeric_answer_scorer already used.
+#
+# This matters beyond tidiness. All four knowledge runs in examples/REAL_RUN.md
+# used this scorer, and quantization measurably changes response length -- so a
+# parser that degrades with verbosity degrades *unequally* between the two
+# models, which manufactures a difference rather than measuring one.
+# --------------------------------------------------------------------------- #
+
+from quantcheck.scoring import extract_choice  # noqa: E402
+
+
+@pytest.mark.parametrize(
+    "resp,expected,why",
+    [
+        ("B", "B", "raw-completion regime: prompt ends 'Answer:', model emits the letter"),
+        ("B) Beijing", "B", "letter plus its option text"),
+        ("D", "D", "bare letter, no trailing punctuation"),
+        ("(C)", "C", "parenthesised letter"),
+        ("The answer is **D**.", "D", "markdown emphasis around the letter"),
+        ("Answer: C", "C", "explicit colon cue"),
+        # The regressions the rewrite was for:
+        ("Option A is incorrect. Option B is wrong. The answer is C.", "C",
+         "dismisses options before concluding; first-match scored A"),
+        ("Let me think. A is wrong, B is wrong. C is the correct answer.", "C",
+         "asserts correctness without the word 'answer' first; scored A"),
+        ("Looking at option A... option B... option D is best.", "D",
+         "option-only phrasing, conclusion last; scored A"),
+        # An explicit cue must outrank the opening letter:
+        ("A) Seoul is not the capital. The correct answer is D.", "D",
+         "opens by quoting an option it then rejects"),
+        ("A) Seoul\nB) Beijing\nC) Bangkok\nD) Tokyo\nThe answer is D.", "D",
+         "restates the whole option list before answering"),
+        ("None of these seem right.", None, "no letter at all"),
+    ],
+)
+def test_extract_choice_handles_chain_of_thought(resp, expected, why):
+    assert extract_choice(resp) == expected, why
+
+
+def test_answer_cue_outranks_the_opening_letter():
+    """Position must not beat an explicit statement.
+
+    Pinned separately because it is the one case where the anchored
+    start-of-response rule and the answer-cue tiers disagree, and getting the
+    precedence backwards reintroduces the original bug in a new form.
+    """
+    resp = "A) Seoul is not the capital of Japan. The correct answer is D."
+    assert multiple_choice_scorer(resp, "D") == 1
+    assert multiple_choice_scorer(resp, "A") == 0
+
+
+def test_unparseable_answer_scores_zero_not_a_guess():
+    """A response with no letter is wrong, not silently assigned one."""
+    assert multiple_choice_scorer("I don't know.", "A") == 0
+    assert extract_choice("I don't know.") is None
